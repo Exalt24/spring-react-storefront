@@ -61,8 +61,15 @@ export class StorefrontError extends Error {
   }
 }
 
+/**
+ * Empty in dev, so requests stay same-origin and Vite's proxy handles them (no
+ * preflight, and the server's CORS config is exercised only by real
+ * cross-origin callers). Set to the deployed API origin in production.
+ */
+const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '')
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
+  const response = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
   })
