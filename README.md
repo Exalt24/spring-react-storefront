@@ -2,7 +2,9 @@
 
 A small e-commerce catalogue and cart built as a **backend-for-frontend**: a React front end that owns the interface, and a Spring Boot API that shapes payloads specifically for it.
 
-Built and tested locally. Not running in production, and it serves no real customers.
+Deployed and live: front end at https://spring-react-storefront.vercel.app, API at https://storefront-api-r4re.onrender.com
+
+Publicly reachable, but built as a portfolio piece: it has no users and serves no real customers, so nothing here is claimed as production experience. The API runs on a free tier that sleeps after about 15 minutes idle, so the first request after a quiet spell takes roughly 50 seconds.
 
 ## What it does
 
@@ -123,3 +125,26 @@ rather than hiding removal behind a separate control.
 api/   Spring Boot service, Flyway migrations, Docker Compose for Postgres
 web/   Vite React front end
 ```
+
+## Deployment
+
+The API runs on Render as a multi-stage Docker image (Maven builder, JRE runtime,
+non-root user) against a managed PostgreSQL 17, with Flyway migrating and seeding
+on first boot. The front end is on Vercel and takes the API origin from
+`VITE_API_BASE`, falling back to same-origin so local development goes through
+the Vite proxy and issues no preflight.
+
+CORS is locked to the single front-end origin and verified in both directions:
+the real origin receives `access-control-allow-origin`, an unknown origin gets a
+`403`. The database has no external IP allowlist, so it is reachable only from
+inside the platform.
+
+Two things worth recording, because both passed locally and failed once deployed:
+
+- **Changing an environment variable on Render does not restart the service.** The
+  new CORS origin sat unused and preflights kept returning 403 until a deploy was
+  triggered. That failure looks exactly like a code fault and is not one.
+- **Fixed `waitForTimeout` sleeps encode localhost latency as an assumption.** The
+  browser suite passed locally and failed against the deployed instance, where the
+  mutation was fine but slower than the guess. Polling the actual condition fixed
+  it, and the suite then passed 14/14 against the live site.
