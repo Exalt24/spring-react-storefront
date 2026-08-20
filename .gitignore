@@ -1,0 +1,21 @@
+# Java / Maven
+api/target/
+api/cp.txt
+api/cptest.txt
+*.class
+
+# Node
+web/node_modules/
+web/dist/
+web/.vite/
+
+# Editors / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Local env
+.env
+.env.local
