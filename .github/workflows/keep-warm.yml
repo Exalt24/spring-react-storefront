@@ -1,0 +1,59 @@
+# Keep the free-tier API awake, because the whole point of this repo is that
+# someone can click the demo and see it work.
+#
+# WHY THIS EXISTS. Render's free instances sleep after ~15 minutes idle and then
+# take the better part of a minute to come back, because this service
+# re-downloads nothing but still cold-starts a JVM and a connection pool.
+# Measured 2026-08-20: a cold request returned NOTHING within 120 seconds. A
+# reviewer opening the demo link in that state sees an empty grid and concludes
+# the project is broken, which is worse than having no link at all.
+#
+# GitHub's scheduled runs are best-effort and often late, so the interval is set
+# well under the sleep window rather than exactly at it. Public-repo Actions
+# minutes are free. GitHub disables schedules on repos with no activity for 60
+# days; if the demo ever looks asleep again, check that first.
+name: keep-warm
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+# Never let two pings overlap, and never let a late run pile up behind a newer one.
+concurrency:
+  group: keep-warm
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wake the API and prove it actually served data
+        run: |
+          set -u
+          API="https://storefront-api-r4re.onrender.com"
+
+          # Health first. A cold start can exceed a single curl's patience, so
+          # retry rather than reporting a false failure.
+          for attempt in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$API/actuator/health" || true)
+            echo "attempt $attempt: health -> ${code:-timeout}"
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+
+          if [ "${code:-}" != "200" ]; then
+            echo "::error::API never returned 200 on /actuator/health"
+            exit 1
+          fi
+
+          # Health being up is not the same as the database being reachable, and
+          # a demo that renders an empty catalogue is the failure this guards.
+          body=$(curl -s --max-time 60 "$API/api/catalog/products?size=1" || true)
+          echo "$body" | head -c 200
+          echo
+          case "$body" in
+            *'"sku"'*) echo "catalogue served real data, demo is warm" ;;
+            *) echo "::error::catalogue returned no products"; exit 1 ;;
+          esac
