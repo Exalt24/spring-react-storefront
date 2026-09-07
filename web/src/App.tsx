@@ -133,10 +133,15 @@ export default function App() {
                     setCategory(c.slug)
                     setPage(0)
                   }}
+                  /* min-h-11 is 44px, the WCAG 2.5.5 target size. These were
+                     px-3 py-1.5 text-xs, which measured about 30px tall in the
+                     390px screenshot and is a miss on a phone. Height comes from
+                     min-h plus grid centring rather than more vertical padding,
+                     so the chip row does not grow taller than it needs to. */
                   className={
                     category === c.slug
-                      ? 'rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-950'
-                      : 'rounded-full border border-slate-700 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-500'
+                      ? 'grid min-h-11 place-items-center rounded-full bg-slate-100 px-4 text-xs font-semibold text-slate-950'
+                      : 'grid min-h-11 place-items-center rounded-full border border-slate-700 px-4 text-xs text-slate-300 hover:border-slate-500'
                   }
                 >
                   {c.label}
@@ -186,7 +191,15 @@ export default function App() {
             </p>
           )}
 
-          <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {/* TWO columns from the narrowest width, not one.
+              This was grid-cols-1 until the 640px breakpoint, and the 390px
+              screenshot showed a single card filling almost the whole viewport,
+              so a shopper saw one product at a time and could compare nothing.
+              Nike, Allbirds and Everlane were all captured at 390px during the
+              reference pass and all three are 2-up on a phone, which is the
+              single clearest delta the comparison produced. Gap tightens on the
+              narrow width so two cards still breathe. */}
+          <ul className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
             {products.isPending &&
               Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
 
