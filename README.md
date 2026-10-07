@@ -2,9 +2,9 @@
 
 A small e-commerce catalogue and cart built as a **backend-for-frontend**: a React front end that owns the interface, and a Spring Boot API that shapes payloads specifically for it.
 
-Deployed and live: front end at https://spring-react-storefront.vercel.app, API at https://storefront-api-r4re.onrender.com
+The front end is on Vercel at https://spring-react-storefront.vercel.app. **The API on Render is currently offline**, so the catalogue does not load on that page. The Render service is up but crash-looping: the free PostgreSQL instance it used no longer exists, so Flyway cannot connect at boot (`UnknownHostException` on the database host). It needs a new database and a new `DB_URL`, which I have not provisioned. Everything below runs locally.
 
-Publicly reachable, but built as a portfolio piece: it has no users and serves no real customers, so nothing here is claimed as production experience. The API runs on a free tier that sleeps after about 15 minutes idle, so the first request after a quiet spell takes roughly 50 seconds.
+It is a portfolio piece with no users and no real customers, so nothing here is claimed as production experience.
 
 ## What it does
 
@@ -108,13 +108,14 @@ summary was read off a real checkout driven with an actual line item.
 Two findings changed the build:
 
 - **Every tile shows the same attributes.** Category and stock always render, and
-  say `None` rather than disappearing. Baymard measured 64% of sites failing this
-  consistency rule, and inconsistent tiles stop people comparing products.
+  say `None` rather than disappearing, because tiles that differ from one product
+  to the next make products hard to compare. Baymard's product list research
+  covers this, and I did not copy any of its figures here.
 - **Summary rows never disappear.** The reference kept a Shipping row visible with
-  "Enter shipping address" where the number would go. 23% of US shoppers abandon
-  an order without an upfront total, and 49% of non-browsing abandonments blame
-  surprise shipping or tax, so a row that vanishes is worse than one admitting it
-  does not know yet. Here an empty cart still shows all four rows at zero.
+  "Enter shipping address" where the number would go. A row that vanishes reads
+  worse than one admitting it does not know yet, since surprise shipping or tax is
+  a common reason for abandoning a checkout. Here an empty cart still shows all
+  four rows at zero.
 
 Stepping a quantity to zero removes the line, which is the documented affordance
 rather than hiding removal behind a separate control.
@@ -128,15 +129,16 @@ web/   Vite React front end
 
 ## Deployment
 
-The API runs on Render as a multi-stage Docker image (Maven builder, JRE runtime,
-non-root user) against a managed PostgreSQL 17, with Flyway migrating and seeding
-on first boot. The front end is on Vercel and takes the API origin from
+The API was deployed on Render as a multi-stage Docker image (Maven builder, JRE
+runtime, non-root user) against a managed PostgreSQL 17, with Flyway migrating and
+seeding on first boot. It is offline now, as described at the top, because the free
+database expired. The front end is on Vercel and takes the API origin from
 `VITE_API_BASE`, falling back to same-origin so local development goes through
 the Vite proxy and issues no preflight.
 
 CORS is locked to the single front-end origin and verified in both directions:
 the real origin receives `access-control-allow-origin`, an unknown origin gets a
-`403`. The database has no external IP allowlist, so it is reachable only from
+`403`. The database had no external IP allowlist, so it was reachable only from
 inside the platform.
 
 Two things worth recording, because both passed locally and failed once deployed:

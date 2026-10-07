@@ -15,8 +15,12 @@
 name: keep-warm
 
 on:
-  schedule:
-    - cron: "*/10 * * * *"
+  # Schedule paused 2026-10-07. The Render free PostgreSQL this API used no longer
+  # exists, so the service crash-loops at Flyway and every scheduled ping ran five
+  # minutes and was cancelled. Restore the cron below once a database and DB_URL
+  # are back; run it by hand from the Actions tab until then.
+  # schedule:
+  #   - cron: "*/10 * * * *"
   workflow_dispatch:
 
 # Never let two pings overlap, and never let a late run pile up behind a newer one.
