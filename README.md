@@ -1,8 +1,12 @@
 # Spring React Storefront
 
+![Browsing, filtering, adding to a cart and sorting, running locally](docs/demo.gif)
+
+*Recorded against the local stack: filter, add two items, server-computed totals, sort and search. [Full quality mp4](docs/demo.mp4).*
+
 A small e-commerce catalogue and cart built as a **backend-for-frontend**: a React front end that owns the interface, and a Spring Boot API that shapes payloads specifically for it.
 
-The front end is on Vercel at https://spring-react-storefront.vercel.app. **The API on Render is currently offline**, so the catalogue does not load on that page. The Render service is up but crash-looping: the free PostgreSQL instance it used no longer exists, so Flyway cannot connect at boot (`UnknownHostException` on the database host). It needs a new database and a new `DB_URL`, which I have not provisioned. Everything below runs locally.
+**There is no hosted copy.** The API ran on Render's free tier, and Render has suspended that service, so the Vercel front end no longer has anything to talk to. Everything below runs locally with one Docker command for the database.
 
 It is a portfolio piece with no users and no real customers, so nothing here is claimed as production experience.
 
