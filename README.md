@@ -4,7 +4,7 @@
 
 *Recorded against the local stack: filter, add two items, server-computed totals, sort and search. [Full quality mp4](docs/demo.mp4).*
 
-A small e-commerce catalogue and cart built as a **backend-for-frontend**: a React front end that owns the interface, and a Spring Boot API that shapes payloads specifically for it.
+E-commerce catalogue and cart as a backend-for-frontend: React 19 over a Spring Boot 4 API, built locally. The React front end owns the interface, and the Spring Boot API shapes payloads specifically for it.
 
 **There is no hosted copy.** The API ran on Render's free tier, and Render has suspended that service, so the Vercel front end no longer has anything to talk to. Everything below runs locally with one Docker command for the database.
 
