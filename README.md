@@ -96,8 +96,8 @@ single join, and `NoNPlusOneQueryIT` counts the statements Hibernate actually
 issued rather than trusting the annotation.
 
 That test is mutation-proven: deleting the `@EntityGraph` takes the count from 2
-to 5 and the test fails. Worth noting the shape of the bug, because it is the
-reason this needs a counting test at all: it scales with **distinct categories**,
+to 5 and the test fails. The shape of the bug is the reason this needs a counting
+test at all: it scales with **distinct categories**,
 not row count, so the endpoint returns byte-identical JSON either way and stays
 fast on a six-row seed while getting slower forever on a real catalogue.
 
