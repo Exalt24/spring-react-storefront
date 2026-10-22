@@ -13,7 +13,7 @@ COPY src ./src
 # before pushing, not during the image build.
 RUN mvn -B -q clean package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:24-jre-alpine
 WORKDIR /app
 
 # Never run as root in a container that faces the internet.
