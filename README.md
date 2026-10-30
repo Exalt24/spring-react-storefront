@@ -6,9 +6,9 @@
 
 E-commerce catalogue and cart as a backend-for-frontend: React 19 over a Spring Boot 4 API, built locally. The React front end owns the interface, and the Spring Boot API shapes payloads specifically for it.
 
-**There is no hosted copy.** The API ran on Render's free tier, and Render has suspended that service, so the Vercel front end no longer has anything to talk to. Everything below runs locally with one Docker command for the database.
+**Run it locally.** The API ran on Render's free tier until Render suspended that service, so the demo is the recording above and the local stack below. Everything below runs locally with one Docker command for the database.
 
-It is a portfolio piece with no users and no real customers, so nothing here is claimed as production experience.
+The catalogue is the seed data that Flyway loads on boot.
 
 ## What it does
 
